@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+        produccion_mysql:
+                image: mysql
+                container_name: mysql_p
+                restart: always
+                volumes:
+                        - db_data:/var/lib/mysql
+                networks:
+                        - produccion
+                environment:
+                          MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+                          MYSQL_DATABASE: $MYSQL_DATABASE
+                          MYSQL_USER: $MYSQL_USER
+                          MYSQL_PASSWORD: $MYSQL_PASSWORD         
+                ports:
+                       - "3307:3306"
+                env_file: 
+                        - .env.produccion         
+
+        produccion_mongo:
+                image: mongo
+                container_name: mongo_p
+                restart: always
+                volumes:
+                        - data:/data/db
+                networks:
+                        - produccion
+                environment:
+                          MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME
+                          MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
+                ports: 
+                       - "27018:28017"
+                env_file:
+                        - .env.produccion         
+        produccion_app:
+                build: .
+                container_name: app_p
+                restart: always
+                networks:
+                        - produccion
+                volumes:
+                        - ./src/:/var/www/html/
+                ports:
+                        - "8081:80"
+volumes:
+     db_data: {}
+     data: {}
+networks:
+ produccion:
+          driver: bridge
+                                       
+
+

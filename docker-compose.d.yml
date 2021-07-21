@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+       desarrollo_mysql:
+           image: mysql
+           container_name: mysql_d
+           restart: always
+           networks:
+                   - desarrollo
+           volumes:
+                   - ./dump:/docker-entrypoint-initdb.d          
+           environment:
+                     MYSQL_ROOT_PASSWORD: $MYSQL_PASS_ROOT
+                     MYSQL_DATABASE: $MYSQL_DATABASE
+                     MYSQL_USER: $MYSQL_USER
+                     MYSQL_PASSWORD: $MYSQL_PASSWORD
+           env_file: 
+                   - .env.desarrollo 
+
+       desarrollo_mongo:
+           image: mongo
+           container_name: mongo_d
+           restart: always  
+           networks:
+                  - desarrollo
+           environment:
+                    MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME
+                    MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
+           env_file: 
+                   - .env.desarrollo
+
+       desarrollo_app:
+           build: .
+           container_name: app_d
+           restart: always
+           networks: 
+                - desarrollo
+           volumes:
+                   - ./src/:/var/www/html/
+           ports:
+                   - "8080:80" 
+networks:
+ desarrollo:
+         driver: bridge          
+
